@@ -55,11 +55,11 @@ public class Dashboard extends javax.swing.JFrame {
         main.setBackground(new java.awt.Color(240, 255, 255));
         main.setPreferredSize(new java.awt.Dimension(700, 500));
 
-        jPanel1.setBackground(new java.awt.Color(169, 181, 223));
+        jPanel1.setBackground(new java.awt.Color(21, 54, 188));
         jPanel1.setPreferredSize(new java.awt.Dimension(270, 397));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(45, 51, 107));
+        jLabel1.setForeground(new java.awt.Color(204, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("BorrowHub");
 
@@ -79,12 +79,22 @@ public class Dashboard extends javax.swing.JFrame {
         returnbttn.setForeground(new java.awt.Color(45, 51, 107));
         returnbttn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/return.png"))); // NOI18N
         returnbttn.setText("Return Item");
+        returnbttn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                returnbttnMouseClicked(evt);
+            }
+        });
 
         inventorybttn.setBackground(new java.awt.Color(255, 242, 242));
         inventorybttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         inventorybttn.setForeground(new java.awt.Color(45, 51, 107));
         inventorybttn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/inventory.png"))); // NOI18N
         inventorybttn.setText("Inventory");
+        inventorybttn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inventorybttnMouseClicked(evt);
+            }
+        });
 
         recordsbttn.setBackground(new java.awt.Color(255, 242, 242));
         recordsbttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -153,7 +163,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 590, Short.MAX_VALUE)
+            .addGap(0, 586, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,7 +190,7 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(mainLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(desktopleft, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE))
+                .addComponent(desktopleft, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE))
         );
         mainLayout.setVerticalGroup(
             mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,7 +202,7 @@ public class Dashboard extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+            .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,9 +221,14 @@ public class Dashboard extends javax.swing.JFrame {
         desktopleft.add(borrow).setVisible(true);
     }//GEN-LAST:event_borrowbttnMouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+    private void returnbttnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnbttnMouseClicked
+       
+    }//GEN-LAST:event_returnbttnMouseClicked
+
+    private void inventorybttnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inventorybttnMouseClicked
+       
+    }//GEN-LAST:event_inventorybttnMouseClicked
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
