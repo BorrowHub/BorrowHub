@@ -55,6 +55,7 @@ public class SignUp extends javax.swing.JFrame {
         main.setPreferredSize(new java.awt.Dimension(700, 500));
 
         jLabel2.setFont(new java.awt.Font("Swis721 Blk BT", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText(" Sign Up Your Account ");
 
         Lnewusername.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -73,6 +74,7 @@ public class SignUp extends javax.swing.JFrame {
 
         jButtonlCreateAcc.setBackground(new java.awt.Color(250, 217, 51));
         jButtonlCreateAcc.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButtonlCreateAcc.setForeground(new java.awt.Color(51, 51, 51));
         jButtonlCreateAcc.setText("Create Account");
         jButtonlCreateAcc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -90,6 +92,7 @@ public class SignUp extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Already have an account?");
 
         BackBttn.setBackground(new java.awt.Color(240, 255, 255));
@@ -212,10 +215,8 @@ public class SignUp extends javax.swing.JFrame {
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(BackBttn)
-                                .addGap(55, 55, 55))))
-                    .addGroup(mainLayout.createSequentialGroup()
-                        .addGap(76, 76, 76)
-                        .addComponent(jLabel2)))
+                                .addGap(55, 55, 55))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         mainLayout.setVerticalGroup(
