@@ -209,7 +209,7 @@ public class Borrow extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bttnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bttnConfirmActionPerformed
-        
+        // TODO add your handling code here:
     }//GEN-LAST:event_bttnConfirmActionPerformed
 
 
@@ -234,27 +234,4 @@ public class Borrow extends javax.swing.JInternalFrame {
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JPanel panelmain;
     // End of variables declaration//GEN-END:variables
-};
-
-private void borrowItem() {
-    String borrower = txtBorrower.getText();  
-    String item = txtItem.getText();          
-
-    try {
-        Connection con = DBConnection.getConnection();
-
-        String sql = "INSERT INTO transactions (borrower, item, date_borrowed, status) VALUES (?, ?, NOW(), 'Borrowed')";
-        PreparedStatement pst = con.prepareStatement(sql);
-
-        pst.setString(1, borrower);
-        pst.setString(2, item);
-
-        pst.executeUpdate();
-
-        javax.swing.JOptionPane.showMessageDialog(null, "Borrowed Successfully!");
-
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
 }
-
