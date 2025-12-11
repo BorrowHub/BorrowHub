@@ -1,19 +1,88 @@
 
 package Finals;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class Borrow extends javax.swing.JInternalFrame {
 
+    // Load items from inventory file into comboBox
+private void loadItemsToComboBox() {
+    jComboBox2.removeAllItems(); // Clear old items
+
+    try (BufferedReader reader = new BufferedReader(new FileReader("inventory.txt"))) {
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split("\\|");
+
+            if (parts.length >= 2) {
+                String itemName = parts[0].trim();
+                String quantity = parts[1].trim();
+
+                // Only show items with available stock
+                if (!quantity.equals("0")) {
+                    jComboBox2.addItem(itemName);
+                }
+            }
+        }
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Error loading inventory: " + e.getMessage());
+    }
+}
 
     public Borrow() {
         initComponents();
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         BasicInternalFrameUI user = (BasicInternalFrameUI)this.getUI();
         user.setNorthPane(null);
+        
+        loadItemsToComboBox(); //Automatic Ibutang tanan items 
     }
+    
+    private void updateInventoryStock(String itemName, int qtyBorrowed) {
+    try {
+        File file = new File("inventory.txt");
+        java.util.List<String> updatedLines = new java.util.ArrayList<>();
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
 
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                
+                if (parts.length >= 2) {
+                    String name = parts[0].trim();
+                    int stock = Integer.parseInt(parts[1].trim());
+
+                    if (name.equals(itemName)) {
+                        stock = Math.max(0, stock - qtyBorrowed); // avoid negative
+                        line = name + " | " + stock + " | " + parts[2].trim();
+                    }
+                }
+                updatedLines.add(line);
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        }
+
+        loadItemsToComboBox(); // refresh comboBox after reducing stock
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Error updating inventory: " + e.getMessage());
+    }
+}
+
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -169,7 +238,7 @@ public class Borrow extends javax.swing.JInternalFrame {
                             .addComponent(Lusername1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Textusername1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addComponent(Lusername)
                 .addGap(12, 12, 12)
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -179,7 +248,7 @@ public class Borrow extends javax.swing.JInternalFrame {
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(Textusername5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelmainLayout.createSequentialGroup()
                         .addComponent(Lusername6)
@@ -189,9 +258,9 @@ public class Borrow extends javax.swing.JInternalFrame {
                         .addComponent(Lusername5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Textusername3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(37, 37, 37)
+                .addGap(31, 31, 31)
                 .addComponent(bttnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33))
+                .addGap(39, 39, 39))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -209,7 +278,42 @@ public class Borrow extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bttnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bttnConfirmActionPerformed
-        // TODO add your handling code here:
+    String studentID = Textusername1.getText();
+    String fullName = Textusername2.getText();
+    String item = jComboBox2.getSelectedItem().toString();
+    String quantity = Textusername5.getText();
+    String purpose = Textusername4.getText();
+    String borrowDate = Textusername3.getText();
+
+    // Validate
+    if (studentID.isEmpty() || fullName.isEmpty() || quantity.isEmpty() || purpose.isEmpty() || borrowDate.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Please complete all fields!");
+        return;
+    }
+
+    // Format record
+    String record = studentID + " | " 
+                    + fullName + " | " 
+                    + item + " | " 
+                    + quantity + " | " 
+                    + purpose + " | " 
+                    + borrowDate;
+
+    // Save using file handling
+    try (java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter("borrow_records.txt", true))) {
+        writer.write(record);
+        writer.newLine();
+        javax.swing.JOptionPane.showMessageDialog(this, "Borrow request saved!");
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error saving file: " + e.getMessage());
+    }
+
+    // Clear fields after saving  
+    Textusername1.setText("");
+    Textusername2.setText("");
+    Textusername5.setText("");
+    Textusername4.setText("");
+    Textusername3.setText("");
     }//GEN-LAST:event_bttnConfirmActionPerformed
 
 

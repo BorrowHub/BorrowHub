@@ -1,19 +1,116 @@
 
 package Finals;
 
+import java.io.*;
+import javax.swing.JOptionPane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JButton;
+import javax.swing.table.TableColumn;
 
 public class Inventory extends javax.swing.JInternalFrame {
 
 
     public Inventory() {
         initComponents();
+        
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         BasicInternalFrameUI user = (BasicInternalFrameUI)this.getUI();
         user.setNorthPane(null);
+        
+        loadInventoryTable();
+        setupAddButton();       // ⭐ Add item handler
+        
     }
 
+    // =========================================================
+    //  ⭐ LOAD INVENTORY INTO TABLE
+    // =========================================================
+    private void loadInventoryTable() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // clear first
 
+        try (BufferedReader reader = new BufferedReader(new FileReader("inventory.txt"))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split("\\|");
+
+                if (data.length == 3) {
+                    String itemName = data[0].trim();
+                    String available = data[1].trim();
+                    String total = data[2].trim();
+
+                    model.addRow(new Object[]{itemName, available, total});
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Inventory file not found. Creating new file...");
+        }
+    }
+
+    //  ⭐ SAVE NEW ITEM INTO FILE
+    private void saveNewItem(String itemName, int totalQty) {
+
+        // 1. Check if item already exists
+        try (BufferedReader reader = new BufferedReader(new FileReader("inventory.txt"))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split("\\|");
+                if (data.length == 3 && data[0].trim().equalsIgnoreCase(itemName)) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Item already exists in inventory!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        } catch (Exception ex) { }
+
+        // 2. Save new item
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("inventory.txt", true))) {
+            writer.write(itemName + " | " + totalQty + " | " + totalQty);
+            writer.newLine();
+            JOptionPane.showMessageDialog(this, "Item added successfully!");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error saving item!");
+        }
+
+        loadInventoryTable(); // refresh table after adding item
+    }
+
+    //  ⭐ ADD BUTTON HANDLER
+    private void setupAddButton() {
+        jButtonexit.addActionListener(e -> {
+            String itemName = Textusername2.getText().trim();
+            String qtyStr = Textusername3.getText().trim();
+
+            if (itemName.isEmpty() || qtyStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter item name and quantity.");
+                return;
+            }
+
+            try {
+                int totalQty = Integer.parseInt(qtyStr);
+
+                if (totalQty <= 0) {
+                    JOptionPane.showMessageDialog(this, "Quantity must be greater than 0.");
+                    return;
+                }
+
+                saveNewItem(itemName, totalQty);
+
+                // Clear fields after save
+                Textusername2.setText("");
+                Textusername3.setText("");
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid number.");
+            }
+        });
+    
+}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -80,7 +177,7 @@ public class Inventory extends javax.swing.JInternalFrame {
         Textusername3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jButtonexit.setBackground(new java.awt.Color(250, 217, 51));
-        jButtonexit.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButtonexit.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButtonexit.setForeground(new java.awt.Color(0, 0, 0));
         jButtonexit.setText("Add Item");
 
@@ -102,7 +199,7 @@ public class Inventory extends javax.swing.JInternalFrame {
                             .addGroup(panelmainLayout.createSequentialGroup()
                                 .addComponent(Textusername3, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButtonexit, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(jButtonexit, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 496, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Lusername7))
                 .addContainerGap(45, Short.MAX_VALUE))
@@ -118,9 +215,9 @@ public class Inventory extends javax.swing.JInternalFrame {
                     .addComponent(Lusername2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButtonexit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Textusername3)
-                    .addComponent(Textusername2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Textusername3, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                    .addComponent(Textusername2, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                    .addComponent(jButtonexit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE))
                 .addGap(41, 41, 41)
                 .addComponent(Lusername7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -156,3 +253,4 @@ public class Inventory extends javax.swing.JInternalFrame {
     private javax.swing.JPanel panelmain;
     // End of variables declaration//GEN-END:variables
 }
+
