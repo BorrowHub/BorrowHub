@@ -9,7 +9,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class Return extends javax.swing.JInternalFrame {
 
-    ArrayList<BorrowedItem> borrowedList = new ArrayList<>();
+    ArrayList<Borrow> borrowedList = new ArrayList<>();
     
     public Return() {
         initComponents();
@@ -23,7 +23,7 @@ public class Return extends javax.swing.JInternalFrame {
    //====================== LOAD BORROWED ITEMS ======================
     private void loadBorrowedItems() {
         borrowedList.clear();
-        DefaultTableModel model = (DefaultTableModel) tblReturn.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
 
         File file = new File("borrowed.txt");
@@ -35,7 +35,7 @@ public class Return extends javax.swing.JInternalFrame {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 if (data.length >= 3) {
-                    BorrowedItem b = new BorrowedItem(data[0], data[1], Integer.parseInt(data[2]));
+                    Borrow b = new Borrow(data[0], data[1], Integer.parseInt(data[2]));
                     borrowedList.add(b);
 
                     model.addRow(new Object[]{
@@ -64,7 +64,7 @@ public class Return extends javax.swing.JInternalFrame {
     //====================== RESTOCK TO INVENTORY ======================
     private void returnToInventory(String itemName, int quantity) {
 
-        ArrayList<InventoryItem> inventory = new ArrayList<>();
+        ArrayList<Inventory> inventory = new ArrayList<>();
         File file = new File("inventory.txt");
 
         try {
@@ -119,7 +119,7 @@ public class Return extends javax.swing.JInternalFrame {
 
     //====================== SEARCH ======================
     private void searchBorrowed(String keyword) {
-        DefaultTableModel model = (DefaultTableModel) tblReturn.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
 
         for (BorrowedItem b : borrowedList) {
@@ -246,7 +246,7 @@ public class Return extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonexitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonexitActionPerformed
-         int selected = tblReturn.getSelectedRow();
+         int selected = jTable1.getSelectedRow();
         if (selected < 0) {
             JOptionPane.showMessageDialog(this, "Select an item to return!");
             return;
