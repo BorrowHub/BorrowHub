@@ -15,7 +15,23 @@ public class Login extends javax.swing.JFrame {
        initComponents();
         setLocationRelativeTo(null); // para mag pop up ni nga jframe sa tunga kung I run
     }
+  // Encryption method (same as in SignUp)
+    private String encrypt(String message, int key) {
+        char[] chars = message.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] += key;
+        }
+        return new String(chars);
+    }
 
+    // Decryption method (reverse of encryption)
+    private String decrypt(String message, int key) {
+        char[] chars = message.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] -= key;
+        }
+        return new String(chars);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -62,31 +78,25 @@ public class Login extends javax.swing.JFrame {
         main.setBackground(new java.awt.Color(240, 255, 255));
         main.setPreferredSize(new java.awt.Dimension(700, 500));
 
-        jLabel2.setFont(new java.awt.Font("Swis721 Blk BT", 0, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setFont(new java.awt.Font("Swis721 Blk BT", 1, 24)); // NOI18N
         jLabel2.setText(" Log in to Your Account ");
 
         Lusername.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        Lusername.setForeground(new java.awt.Color(0, 0, 0));
         Lusername.setText("Username");
 
         Lpassword.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        Lpassword.setForeground(new java.awt.Color(0, 0, 0));
         Lpassword.setText("Password");
 
         Textusername.setBackground(new java.awt.Color(240, 255, 255));
         Textusername.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername.setForeground(new java.awt.Color(0, 0, 0));
         Textusername.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jPassword.setBackground(new java.awt.Color(240, 255, 255));
         jPassword.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jPassword.setForeground(new java.awt.Color(0, 0, 0));
         jPassword.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jButtonlogin.setBackground(new java.awt.Color(250, 217, 51));
         jButtonlogin.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButtonlogin.setForeground(new java.awt.Color(0, 0, 0));
         jButtonlogin.setText("Login");
         jButtonlogin.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -111,10 +121,8 @@ public class Login extends javax.swing.JFrame {
 
         jButtonexit.setBackground(new java.awt.Color(250, 217, 51));
         jButtonexit.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButtonexit.setForeground(new java.awt.Color(0, 0, 0));
         jButtonexit.setText("Exit");
 
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Dont have an account?");
 
         CreateAccBttn.setBackground(new java.awt.Color(240, 255, 255));
@@ -221,27 +229,31 @@ public class Login extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainLayout.createSequentialGroup()
-                        .addGap(48, 48, 48)
                         .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel2)
-                                .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jCheckShowPass)
-                                    .addComponent(Lusername, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(Textusername, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(Lpassword, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jPassword, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButtonlogin, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButtonexit, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CreateAccBttn)
-                                .addGap(43, 43, 43))))
-                    .addGroup(mainLayout.createSequentialGroup()
-                        .addGap(115, 115, 115)
-                        .addComponent(jLabel5)))
-                .addContainerGap(54, Short.MAX_VALUE))
+                            .addGroup(mainLayout.createSequentialGroup()
+                                .addGap(48, 48, 48)
+                                .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jCheckShowPass)
+                                        .addComponent(Lusername, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(Textusername, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(Lpassword, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jPassword, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jButtonlogin, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButtonexit, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(CreateAccBttn)
+                                        .addGap(43, 43, 43))))
+                            .addGroup(mainLayout.createSequentialGroup()
+                                .addGap(115, 115, 115)
+                                .addComponent(jLabel5)))
+                        .addContainerGap(54, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addGap(70, 70, 70))))
         );
         mainLayout.setVerticalGroup(
             mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -279,15 +291,73 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonloginActionPerformed
-        // TODO add your handling code here:
+                String username = Textusername.getText().trim();
+        String password = new String(jPassword.getPassword()).trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please input your Username and Password", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String encryptedPassword = password;
+        boolean usernameExist = false;
+        boolean passMatched = false;
+
+        try {
+            BufferedReader read = new BufferedReader(new FileReader("users.txt"));
+            String line;
+
+            while ((line = read.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    String dataUsername = parts[0].trim();
+                    String encryptedStoredPass = parts[1].trim();
+
+                    if (username.equals(dataUsername)) {
+                        usernameExist = true;
+
+                        // Decrypt the stored password
+                        String decryptedPass = decrypt(encryptedStoredPass, Shift);
+
+                        // Check if the entered password matches the decrypted password
+                        if (encryptedPassword.equals(decryptedPass)) {
+                            passMatched = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            read.close();
+
+            // Check results and display appropriate messages
+            if (!usernameExist) {
+                JOptionPane.showMessageDialog(this, "Username not found", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                Textusername.setText("");
+                jPassword.setText("");
+            } else if (!passMatched) {
+                JOptionPane.showMessageDialog(this, "Incorrect password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                jPassword.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Login Successful", "Welcome", JOptionPane.INFORMATION_MESSAGE);
+                // Transition to the Dashboard (You need to create the Dashboard class)
+                Dashboard dash = new Dashboard();
+                dash.setVisible(true);
+                dispose();
+            }
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error reading users file", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_jButtonloginActionPerformed
 
     private void jCheckShowPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckShowPassActionPerformed
-//       if (jCheckShowPass.isSelected()){
-//            jPassword.setEchoChar((char) 0); // ma visible ang password
-//        }else{
-//            jPassword.setEchoChar('*');//ma tago ang password
-//        }
+       if (jCheckShowPass.isSelected()){
+            jPassword.setEchoChar((char) 0); // ma visible ang password
+        }else{
+            jPassword.setEchoChar('*');//ma tago ang password
+        }
     }//GEN-LAST:event_jCheckShowPassActionPerformed
 
     private void CreateAccBttnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CreateAccBttnMouseClicked
@@ -373,31 +443,6 @@ public class Login extends javax.swing.JFrame {
 //    }
 //    
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Login().setVisible(true);

@@ -2,15 +2,29 @@
 package Finals;
 
 
+import javax.swing.*;
+import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class SignUp extends javax.swing.JFrame {
 
-  
+     static final int Shift = 3;
+    
     public SignUp() {
        initComponents();
         setLocationRelativeTo(null); // para mag pop up ni nga jframe sa tunga kung I run
     }
 
-   
+     // Encryption method (same as in Login)
+    private String encrypt(String message, int key) {
+        char[] chars = message.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] += key;
+        }
+        return new String(chars);
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -40,31 +54,25 @@ public class SignUp extends javax.swing.JFrame {
         main.setBackground(new java.awt.Color(240, 255, 255));
         main.setPreferredSize(new java.awt.Dimension(700, 500));
 
-        jLabel2.setFont(new java.awt.Font("Swis721 Blk BT", 0, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setFont(new java.awt.Font("Swis721 Blk BT", 1, 24)); // NOI18N
         jLabel2.setText(" Sign Up Your Account ");
 
         Lnewusername.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        Lnewusername.setForeground(new java.awt.Color(0, 0, 0));
         Lnewusername.setText("Username");
 
         Lnewpassword.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        Lnewpassword.setForeground(new java.awt.Color(0, 0, 0));
         Lnewpassword.setText("Password");
 
         TextNewUser.setBackground(new java.awt.Color(240, 255, 255));
         TextNewUser.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        TextNewUser.setForeground(new java.awt.Color(0, 0, 0));
         TextNewUser.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jnewPassword.setBackground(new java.awt.Color(240, 255, 255));
         jnewPassword.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jnewPassword.setForeground(new java.awt.Color(0, 0, 0));
         jnewPassword.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jButtonlCreateAcc.setBackground(new java.awt.Color(250, 217, 51));
         jButtonlCreateAcc.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButtonlCreateAcc.setForeground(new java.awt.Color(0, 0, 0));
         jButtonlCreateAcc.setText("Create Account");
         jButtonlCreateAcc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -82,7 +90,6 @@ public class SignUp extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Already have an account?");
 
         BackBttn.setBackground(new java.awt.Color(240, 255, 255));
@@ -189,9 +196,6 @@ public class SignUp extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainLayout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(jLabel2))
-                    .addGroup(mainLayout.createSequentialGroup()
                         .addGap(90, 90, 90)
                         .addComponent(jLabel5))
                     .addGroup(mainLayout.createSequentialGroup()
@@ -208,7 +212,10 @@ public class SignUp extends javax.swing.JFrame {
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(BackBttn)
-                                .addGap(55, 55, 55)))))
+                                .addGap(55, 55, 55))))
+                    .addGroup(mainLayout.createSequentialGroup()
+                        .addGap(76, 76, 76)
+                        .addComponent(jLabel2)))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         mainLayout.setVerticalGroup(
@@ -255,11 +262,77 @@ public class SignUp extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonlCreateAccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonlCreateAccActionPerformed
-        // TODO add your handling code here:
+         String newUser = TextNewUser.getText().trim();
+        String newPass = new String(jnewPassword.getPassword()).trim();
+
+        if (newUser.isEmpty() || newPass.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please enter all fields.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            File file = new File("users.txt");
+
+            // Create the file if it doesn't exist
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            // Check if username already exists
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            boolean exists = false;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    if (newUser.equals(parts[0].trim())) {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+            reader.close();
+
+            if (exists) {
+                JOptionPane.showMessageDialog(this,
+                        "Username already exists!",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Encrypt the password before saving
+            String encryptedPass = encrypt(newPass, Shift);
+
+            // Save the username and encrypted password to the file
+            FileWriter writer = new FileWriter(file, true);
+            writer.write(newUser + "," + encryptedPass + "\n");
+            writer.close();
+
+            JOptionPane.showMessageDialog(this,
+                    "Account Created Successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Go back to the login screen
+            Login log = new Login();
+            log.setVisible(true);
+            dispose();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error saving account: " + e.getMessage(),
+                    "File Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonlCreateAccActionPerformed
 
     private void jCheckShowPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckShowPassActionPerformed
-        // TODO add your handling code here:
+        if (jCheckShowPass.isSelected()) {
+            jnewPassword.setEchoChar((char) 0); // Show the password
+        } else {
+            jnewPassword.setEchoChar('*'); // Hide the password
+        }
     }//GEN-LAST:event_jCheckShowPassActionPerformed
 
     private void BackBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackBttnActionPerformed
