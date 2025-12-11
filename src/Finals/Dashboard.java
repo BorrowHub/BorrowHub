@@ -2,22 +2,8 @@
 package Finals;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import javax.swing.JOptionPane;
 
-public class DBConnection {
-    public static Connection getConnection() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/borrowhub",
-                "root",
-                ""
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-}
 
 public class Dashboard extends javax.swing.JFrame {
 
@@ -37,7 +23,21 @@ public class Dashboard extends javax.swing.JFrame {
         }
     }
 
-
+    public class DBConnection {
+    public static Connection getConnection() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/borrowhub",
+                "root",
+                ""
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -145,6 +145,11 @@ public class Dashboard extends javax.swing.JFrame {
         logoutbttn.setForeground(new java.awt.Color(45, 51, 107));
         logoutbttn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/logout.png"))); // NOI18N
         logoutbttn.setText("Log Out");
+        logoutbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutbttnActionPerformed(evt);
+            }
+        });
 
         borrowbttn1.setBackground(new java.awt.Color(255, 242, 242));
         borrowbttn1.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -292,6 +297,18 @@ public class Dashboard extends javax.swing.JFrame {
     desktopleft.removeAll();
     desktopleft.add(rec).setVisible(true);
     }//GEN-LAST:event_recordsbttnActionPerformed
+
+    private void logoutbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutbttnActionPerformed
+                int option =  JOptionPane.showConfirmDialog(this, "Are you sure?", "Logout",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.YES_OPTION){
+            //mobalik sa login nga jframe
+            Login log = new Login();
+            log.setVisible(true);
+            dispose();
+        }
+
+    }//GEN-LAST:event_logoutbttnActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
