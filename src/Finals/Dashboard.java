@@ -73,6 +73,11 @@ public class Dashboard extends javax.swing.JFrame {
                 borrowbttnMouseClicked(evt);
             }
         });
+        borrowbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borrowbttnActionPerformed(evt);
+            }
+        });
 
         returnbttn.setBackground(new java.awt.Color(255, 242, 242));
         returnbttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -82,6 +87,11 @@ public class Dashboard extends javax.swing.JFrame {
         returnbttn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 returnbttnMouseClicked(evt);
+            }
+        });
+        returnbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                returnbttnActionPerformed(evt);
             }
         });
 
@@ -95,12 +105,22 @@ public class Dashboard extends javax.swing.JFrame {
                 inventorybttnMouseClicked(evt);
             }
         });
+        inventorybttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inventorybttnActionPerformed(evt);
+            }
+        });
 
         recordsbttn.setBackground(new java.awt.Color(255, 242, 242));
         recordsbttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         recordsbttn.setForeground(new java.awt.Color(45, 51, 107));
         recordsbttn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/history.png"))); // NOI18N
         recordsbttn.setText("Records");
+        recordsbttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recordsbttnActionPerformed(evt);
+            }
+        });
 
         logoutbttn.setBackground(new java.awt.Color(255, 242, 242));
         logoutbttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -228,6 +248,32 @@ public class Dashboard extends javax.swing.JFrame {
     private void inventorybttnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inventorybttnMouseClicked
        
     }//GEN-LAST:event_inventorybttnMouseClicked
+
+    private void borrowbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowbttnActionPerformed
+     Borrow bar = new Borrow();
+     desktopleft.removeAll();
+     desktopleft.add(bar).setVisible(true);
+     
+     
+    }//GEN-LAST:event_borrowbttnActionPerformed
+
+    private void returnbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnbttnActionPerformed
+     Return ret = new Return();
+     desktopleft.removeAll();
+     desktopleft.add(ret).setVisible(true);
+    }//GEN-LAST:event_returnbttnActionPerformed
+
+    private void inventorybttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inventorybttnActionPerformed
+      Inventory invent = new Inventory();
+      desktopleft.removeAll();
+      desktopleft.add(invent).setVisible(true);
+    }//GEN-LAST:event_inventorybttnActionPerformed
+
+    private void recordsbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordsbttnActionPerformed
+    Records rec = new Records();
+    desktopleft.removeAll();
+    desktopleft.add(rec).setVisible(true);
+    }//GEN-LAST:event_recordsbttnActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
