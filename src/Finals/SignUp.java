@@ -263,7 +263,9 @@ public class SignUp extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckShowPassActionPerformed
 
     private void BackBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackBttnActionPerformed
-        // TODO add your handling code here:
+        Login log = new Login();
+        log.setVisible(true);
+        dispose();
     }//GEN-LAST:event_BackBttnActionPerformed
 
     /**

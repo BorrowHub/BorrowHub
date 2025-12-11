@@ -1,10 +1,16 @@
 
 package Finals;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
 
 public class Login extends javax.swing.JFrame {
 
-
+    static final int Shift = 3;
+    
     public Login() {
        initComponents();
         setLocationRelativeTo(null); // para mag pop up ni nga jframe sa tunga kung I run
@@ -82,6 +88,11 @@ public class Login extends javax.swing.JFrame {
         jButtonlogin.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButtonlogin.setForeground(new java.awt.Color(0, 0, 0));
         jButtonlogin.setText("Login");
+        jButtonlogin.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonloginMouseClicked(evt);
+            }
+        });
         jButtonlogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonloginActionPerformed(evt);
@@ -111,6 +122,11 @@ public class Login extends javax.swing.JFrame {
         CreateAccBttn.setForeground(new java.awt.Color(0, 0, 204));
         CreateAccBttn.setText("Create Account");
         CreateAccBttn.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        CreateAccBttn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CreateAccBttnMouseClicked(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(102, 102, 102));
@@ -267,12 +283,95 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonloginActionPerformed
 
     private void jCheckShowPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckShowPassActionPerformed
-        // TODO add your handling code here:
+//       if (jCheckShowPass.isSelected()){
+//            jPassword.setEchoChar((char) 0); // ma visible ang password
+//        }else{
+//            jPassword.setEchoChar('*');//ma tago ang password
+//        }
     }//GEN-LAST:event_jCheckShowPassActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void CreateAccBttnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CreateAccBttnMouseClicked
+        SignUp sign = new SignUp();
+        sign.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_CreateAccBttnMouseClicked
+
+    private void jButtonloginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonloginMouseClicked
+//        String username = Textusername.getText();
+//        String password = new String(jPassword.getPassword());
+//        
+//        //if ever nga natuplok ni user ang button unya walay sulod ang username ug password
+//        if (username.isEmpty() || password.isEmpty()){
+//            JOptionPane.showMessageDialog(this, "Please input Your Username and Password", "Error", JOptionPane.ERROR_MESSAGE);
+//            return; //maputol ang execution kung walay sulod ang username ug password
+//        }
+//        
+//        String encryptPassword = password;
+//        boolean usernameExist = false;
+//        boolean passmatched = false;
+//        
+//        try{
+//            BufferedReader read = new BufferedReader(new FileReader(""));
+//            String line;
+//            
+//            while ((line = read.readLine()) != null){
+//                String[] parts = line.split(",");
+//                if (parts.length == 2){
+//                    String dataUsername = parts[0].trim();
+//                    String encryptedPassword = parts[1].trim();
+//                    
+//                    //kung ang gi input ni username nakita sa datausername
+//                    if (username.equals(dataUsername)){
+//                        usernameExist = true;
+//                        
+//                        //gi call nato ang decryptedpass nga method
+//                        String decryptedPass = decrypt(encryptedPassword, Shift);
+//                        
+//                        //kung ang password kay nag matched pud pag decrypt
+//                        if(encryptPassword.equals(decryptedPass)){
+//                            passmatched = true;
+//                            break;
+//                            }
+//                        }  
+//                    }
+//                }
+//            
+//            read.close(); //muondang na siya ug basa
+//            
+//            //kung wala nag exist ang username
+//            if(!usernameExist){
+//                JOptionPane.showMessageDialog(this, "username not found", "loginFailed", JOptionPane.ERROR_MESSAGE);
+//                Textusername.setText(""); //Mahawan ang username textfeild
+//                jPassword.setText(""); //Mahawan ang password feild
+//            
+//            //kung wala nag matched ang password
+//            }else if(!passmatched){
+//                JOptionPane.showMessageDialog(this, "Incorrect password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+//                jPassword.setText(""); //Mahawan ang password feild
+//            
+//            }else{
+//                JOptionPane.showMessageDialog(this, "login Successful", "Welcome", JOptionPane.INFORMATION_MESSAGE);
+//                //Mapadulong sa Dashboard nga Jframe
+//                Dashboard dash = new Dashboard();
+//                dash.setVisible(true);
+//                dispose();
+//            }
+//                        
+//        }catch(IOException e){
+//         JOptionPane.showMessageDialog(this, "Error reading eser file", "Error", JOptionPane.ERROR_MESSAGE);
+//           }
+        
+    }//GEN-LAST:event_jButtonloginMouseClicked
+
+//    //decryption ni siya nga method
+//    private String decrypt(String message, int key) {
+//        char[] chars = message.toCharArray();
+//        for (int i = 0; i < chars.length; i++){
+//            chars[i] -= key; //kung decrypt kay minus and equal
+//        }
+//        return new String(chars);   
+//    }
+//    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
