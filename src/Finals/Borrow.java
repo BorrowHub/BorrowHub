@@ -1,9 +1,12 @@
-
 package Finals;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+
 
 public class Borrow extends javax.swing.JInternalFrame {
 
