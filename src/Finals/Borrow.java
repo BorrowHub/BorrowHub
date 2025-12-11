@@ -49,7 +49,6 @@ public class Borrow extends javax.swing.JInternalFrame {
         panelmain.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Black", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Borrow Decoration Items");
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
@@ -57,70 +56,60 @@ public class Borrow extends javax.swing.JInternalFrame {
         jLabel5.setText("Please fill out the form to borrow an item for your event.");
 
         Lusername.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
-        Lusername.setForeground(new java.awt.Color(0, 0, 0));
         Lusername.setText("Borrow Details");
 
         Lusername1.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        Lusername1.setForeground(new java.awt.Color(0, 0, 0));
         Lusername1.setText("Student ID");
 
         Textusername1.setBackground(new java.awt.Color(240, 255, 255));
         Textusername1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername1.setForeground(new java.awt.Color(0, 0, 0));
         Textusername1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         Lusername2.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        Lusername2.setForeground(new java.awt.Color(0, 0, 0));
         Lusername2.setText("Student Full Name");
 
         Textusername2.setBackground(new java.awt.Color(240, 255, 255));
         Textusername2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername2.setForeground(new java.awt.Color(0, 0, 0));
         Textusername2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         Lusername4.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        Lusername4.setForeground(new java.awt.Color(0, 0, 0));
         Lusername4.setText("Item");
 
         Lusername5.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        Lusername5.setForeground(new java.awt.Color(0, 0, 0));
         Lusername5.setText("Borrow Date");
 
         Textusername3.setBackground(new java.awt.Color(240, 255, 255));
         Textusername3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername3.setForeground(new java.awt.Color(0, 0, 0));
         Textusername3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         Lusername6.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        Lusername6.setForeground(new java.awt.Color(0, 0, 0));
         Lusername6.setText("Purpose");
 
         Textusername4.setBackground(new java.awt.Color(240, 255, 255));
         Textusername4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername4.setForeground(new java.awt.Color(0, 0, 0));
         Textusername4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jComboBox2.setBackground(new java.awt.Color(240, 255, 255));
-        jComboBox2.setForeground(new java.awt.Color(0, 0, 0));
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         Lusername7.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
-        Lusername7.setForeground(new java.awt.Color(0, 0, 0));
         Lusername7.setText("Student Information ");
 
         Lusername8.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        Lusername8.setForeground(new java.awt.Color(0, 0, 0));
         Lusername8.setText("Quantity");
 
         Textusername5.setBackground(new java.awt.Color(240, 255, 255));
         Textusername5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername5.setForeground(new java.awt.Color(0, 0, 0));
         Textusername5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         bttnConfirm.setBackground(new java.awt.Color(250, 217, 51));
         bttnConfirm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        bttnConfirm.setForeground(new java.awt.Color(0, 0, 0));
         bttnConfirm.setText("Confirm");
+        bttnConfirm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bttnConfirmActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelmainLayout = new javax.swing.GroupLayout(panelmain);
         panelmain.setLayout(panelmainLayout);
@@ -148,14 +137,10 @@ public class Borrow extends javax.swing.JInternalFrame {
                             .addComponent(Textusername3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(panelmainLayout.createSequentialGroup()
                             .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(panelmainLayout.createSequentialGroup()
-                                    .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(Lusername1)
-                                        .addComponent(Textusername2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGap(21, 21, 21))
-                                .addGroup(panelmainLayout.createSequentialGroup()
-                                    .addComponent(Lusername6)
-                                    .addGap(172, 172, 172)))
+                                .addComponent(Lusername1)
+                                .addComponent(Textusername2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Lusername6))
+                            .addGap(21, 21, 21)
                             .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(Lusername2)
                                 .addGroup(panelmainLayout.createSequentialGroup()
@@ -222,6 +207,10 @@ public class Borrow extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void bttnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bttnConfirmActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bttnConfirmActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
