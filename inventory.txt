@@ -1,1 +1,10 @@
-law | 5 | 5
+law,5,5
+Candle,55,50
+Baloons,120,100
+Confetti,50,50
+Chairs,100,100
+Tables,40,30
+Table Cloth,50,50
+Handkerchief,100,100
+Balloons,350,100
+Baloon,500,500
