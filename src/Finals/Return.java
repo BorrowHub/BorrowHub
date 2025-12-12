@@ -1,4 +1,3 @@
-
 package Finals;
 
 import java.io.*;
@@ -7,146 +6,245 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-
 public class Return extends javax.swing.JInternalFrame {
 
     ArrayList<BorrowedItem> borrowedList = new ArrayList<>();
-    
+
     public Return() {
         initComponents();
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        BasicInternalFrameUI user = (BasicInternalFrameUI)this.getUI();
-        user.setNorthPane(null);
-        
+        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
+        ui.setNorthPane(null);
         loadBorrowedItems();
     }
-    
-   //====================== LOAD BORROWED ITEMS ======================
+
+    // LOAD BORROWED ITEMS FROM FILE
     private void loadBorrowedItems() {
+
         borrowedList.clear();
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTablereturn.getModel();
         model.setRowCount(0);
 
-        File file = new File("borrowed_records.txt");
+        File file = new File("borrow_records.txt");
+        if (!file.exists()) file = new File("borrowed.txt");
         if (!file.exists()) return;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+
             String line;
-
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data.length >= 6) {
-                    String studentID = data[0].trim();
-                    String fullName = data[1].trim();
-                    String itemName = data[2].trim();
-                    int quantity = Integer.parseInt(data[3].trim());
-                    String purpose = data[4].trim();
-                    String borrowDate = data[5].trim();
 
-                    BorrowedItem b = new BorrowedItem(studentID, fullName, itemName, quantity, purpose, borrowDate);
+                String[] data = line.split("\\s*\\|\\s*|\\s*,\\s*");
+
+                if (data.length >= 6) {
+                    // Ang Format: studentID | fullName | item | qty | purpose | date
+                    BorrowedItem b = new BorrowedItem(
+                            data[0].trim(),
+                            data[1].trim(),
+                            data[2].trim(),
+                            parseIntSafe(data[3].trim(), 1),
+                            data[4].trim(),
+                            data[5].trim()
+                    );
+
                     borrowedList.add(b);
 
                     model.addRow(new Object[]{
-                            studentID,
-                            fullName,
-                            itemName,
-                            quantity,
-                            purpose,
-                            borrowDate
+                        b.getItem(), // Item Name
+                        b.getqty(),
+                        b.getStudentID(), // Student ID
+                        b.getFullName(), // Student Name
+                        b.getBorrowDate() // Borrow Date
+                    });
+
+                } else if (data.length >= 3) {
+                    // fallback: name, item, qty
+                    BorrowedItem b = new BorrowedItem(
+                            "",
+                            data[0].trim(),
+                            data[1].trim(),
+                            parseIntSafe(data[2].trim(), 1),
+                            "",
+                            ""
+                    );
+
+                    borrowedList.add(b);
+
+                    model.addRow(new Object[]{
+                        b.getItem(), // Item Name
+                        b.getStudentID(), // Student ID
+                        b.getFullName(), // Student Name
+                        b.getBorrowDate() // Borrow Date
                     });
                 }
             }
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading borrowed items: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error loading records: " + e.getMessage());
         }
     }
 
-    //====================== WRITE UPDATED BORROWED FILE ======================
+    private int parseIntSafe(String s, int fallback) {
+        try { return Integer.parseInt(s); }
+        catch (Exception e) { return fallback; }
+    }
+
+
+    // SAVE UPDATED BORROWED LIST BACK TO FILE
     private void saveBorrowedList() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("borrow_records.txt"))) {
+        String path = "C:\\BorrowHub\\BorrowHub\\src\\data\\borrow_records.txt";
+        File ret = new File(path);//gi named nato ang path to ret
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ret))) {
+
             for (BorrowedItem b : borrowedList) {
-                bw.write(b.getStudentID() + " | " + b.getFullName() + " | " + b.getItem() + " | "
-                        + b.getQuantity() + " | " + b.getPurpose() + " | " + b.getBorrowDate());
-                bw.newLine();
+                pw.println(b.getStudentID() + " | " + b.getFullName()
+                        + " | " + b.getItem()
+                        + " | " + b.getQuantity()
+                        + " | " + b.getPurpose()
+                        + " | " + b.getBorrowDate());
             }
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving borrowed list!");
+            JOptionPane.showMessageDialog(
+                    this, "Error saving borrowed list: " + e.getMessage());
         }
     }
 
-    //====================== RESTOCK TO INVENTORY ======================
-    private void returnToInventory(String itemName, int quantity) {
+    // RETURN ITEM — ADD BACK TO INVENTORY
+    private void returnToInventory(String itemName, int qty) {
 
-        ArrayList<InventoryItem> inventory = new ArrayList<>();
         File file = new File("inventory.txt");
+        ArrayList<InventoryItem> items = new ArrayList<>();
 
         try {
-            // Load inventory
+
             if (file.exists()) {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
 
                 while ((line = br.readLine()) != null) {
-                    String[] data = line.split(",");
-                    if (data.length >= 3) {
-                        inventory.add(new InventoryItem(data[0], Integer.parseInt(data[1]), data[2]));
+                    String[] p = line.split("\\s*\\|\\s*|\\s*,\\s*");
+
+                    if (p.length >= 3) {
+                        items.add(new InventoryItem(
+                                p[0].trim(),
+                                parseIntSafe(p[1].trim(), 0),
+                                p[2].trim()));
                     }
                 }
+
                 br.close();
             }
 
-            // Find item and restock
             boolean found = false;
-            for (InventoryItem inv : inventory) {
-                if (inv.getName().equals(itemName)) {
-                    inv.setQuantity(inv.getQuantity() + quantity);
+
+            for (InventoryItem it : items) {
+                if (it.getName().equalsIgnoreCase(itemName)) {
+                    it.setQuantity(it.getQuantity() + qty);
                     found = true;
                 }
             }
 
-            // If not found, add as new item
             if (!found) {
-                inventory.add(new InventoryItem(itemName, quantity, "Decoration"));
+                items.add(new InventoryItem(itemName, qty, "Returned"));
             }
 
-            // Write inventory back
-            PrintWriter pw = new PrintWriter(new FileWriter("inventory.txt"));
-            for (InventoryItem inv : inventory) {
-                pw.println(inv.getName() + "," + inv.getQuantity() + "," + inv.getCategory());
+            PrintWriter pw = new PrintWriter(new FileWriter(file));
+
+            for (InventoryItem it : items) {
+                pw.println(it.getName() + "," + it.getQuantity() + "," + it.getCategory());
             }
+
             pw.close();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error returning to inventory!");
+            JOptionPane.showMessageDialog(this, "Error updating inventory: " + e.getMessage());
         }
     }
 
-    //====================== DELETE BORROWED ENTRY ======================
+    // DELETE BORROWED ENTRY
     private void deleteBorrowed(int index) {
-        if (index >= 0) {
+        if (index >= 0 && index < borrowedList.size()) {
             borrowedList.remove(index);
             saveBorrowedList();
             loadBorrowedItems();
         }
     }
 
-    //====================== SEARCH ======================
-    private void searchBorrowed(String keyword) {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
+    // INNER CLASSES 
+    private class BorrowedItem {
+        private final String studentID;
+        private final String fullName;
+        private final String item;
+        private final int quantity;
+        private final String purpose;
+        private final String borrowDate;
 
-        for (BorrowedItem b : borrowedList) {
-            if (b.getBorrower().toLowerCase().contains(keyword.toLowerCase()) ||
-                b.getItem().toLowerCase().contains(keyword.toLowerCase())) {
+        public BorrowedItem(String studentID, String fullName,
+                String item, int quantity, String purpose, String borrowDate) {
 
-                model.addRow(new Object[]{
-                    b.getBorrower(),
-                    b.getItem(),
-                    b.getQuantity()
-                });
-            }
+            this.studentID = studentID;
+            this.fullName = fullName;
+            this.item = item;
+            this.quantity = quantity;
+            this.purpose = purpose;
+            this.borrowDate = borrowDate;
         }
+
+        public String getStudentID() { return studentID; }
+        public String getFullName() { return fullName; }
+        public String getItem() { return item; }
+        public int getQuantity() { return quantity; }
+        public String getPurpose() { return purpose; }
+        public String getBorrowDate() { return borrowDate; }
     }
+
+    private class InventoryItem {
+        private final String name;
+        private int quantity;
+        private final String category;
+
+        public InventoryItem(String name, int quantity, String category) {
+            this.name = name;
+            this.quantity = quantity;
+            this.category = category;
+        }
+
+        public String getName() { return name; }
+        public int getQuantity() { return quantity; }
+        public String getCategory() { return category; }
+
+        public void setQuantity(int q) { this.quantity = q; }
+    }
+    
+    // SAVE RETURN RECORD (APPEND TO borrow_records.txt)
+private void saveReturnRecord(BorrowedItem b) {
+
+    String path = "C:\\BorrowHub\\BorrowHub\\src\\data\\borrow_records.txt";
+    File file = new File(path);
+
+    String returnDate = java.time.LocalDate.now().toString();
+
+    try (PrintWriter pw = new PrintWriter(new FileWriter(file, true))) {
+
+        pw.println(
+                b.getStudentID() + " | "
+                + b.getFullName() + " | "
+                + b.getItem() + " | "
+                + b.getQuantity() + " | "
+                + b.getPurpose() + " | "
+                + b.getBorrowDate() + " | "
+                + returnDate
+        );
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(
+                this, "Error saving return record: " + e.getMessage());
+    }
+}
+
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -157,7 +255,7 @@ public class Return extends javax.swing.JInternalFrame {
         jLabel5 = new javax.swing.JLabel();
         Lusername7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTablereturn = new javax.swing.JTable();
         jButtonexit = new javax.swing.JButton();
 
         jTextField1.setText("jTextField1");
@@ -171,7 +269,6 @@ public class Return extends javax.swing.JInternalFrame {
         panelmain.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Black", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Return an Item");
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
@@ -179,28 +276,25 @@ public class Return extends javax.swing.JInternalFrame {
         jLabel5.setText("Search for and select the item you wish to return");
 
         Lusername7.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
-        Lusername7.setForeground(new java.awt.Color(0, 0, 0));
         Lusername7.setText("Borrowed Items");
 
-        jTable1.setBackground(new java.awt.Color(240, 255, 255));
-        jTable1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTable1.setForeground(new java.awt.Color(0, 0, 0));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTablereturn.setBackground(new java.awt.Color(240, 255, 255));
+        jTablereturn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jTablereturn.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Item Name", "Student Name", "Borrow Date"
+                "Item Name", "Quantity", "Student ID", "Student Name", "Borrow Date"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTablereturn);
 
         jButtonexit.setBackground(new java.awt.Color(250, 217, 51));
         jButtonexit.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButtonexit.setForeground(new java.awt.Color(0, 0, 0));
         jButtonexit.setText("Return");
         jButtonexit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -259,7 +353,7 @@ public class Return extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonexitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonexitActionPerformed
-         int selected = jTable1.getSelectedRow();
+         int selected = jTablereturn.getSelectedRow();
         if (selected < 0) {
             JOptionPane.showMessageDialog(this, "Select an item to return!");
             return;
@@ -273,6 +367,7 @@ public class Return extends javax.swing.JInternalFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
+            saveReturnRecord(b);
             returnToInventory(b.getItem(), b.getQuantity());
             deleteBorrowed(selected);
             JOptionPane.showMessageDialog(this, "Item returned successfully!");
@@ -288,7 +383,7 @@ public class Return extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTablereturn;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JPanel panelmain;
     // End of variables declaration//GEN-END:variables
