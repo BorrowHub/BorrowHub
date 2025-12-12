@@ -5,91 +5,122 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-
 public class Borrow extends javax.swing.JInternalFrame {
-    
-    private static final String INVENTORY_PATH = "C:\\BorrowHub\\BorrowHub\\src\\data\\inventory.txt";
 
-    // Load items from inventory file into comboBox
-private void loadItemsToComboBox() {
-    jComboBox2.removeAllItems(); // Clear old items
-    
-    File inv = new File(INVENTORY_PATH);//gi named nato ang path to inv
-        
-    try (BufferedReader reader = new BufferedReader(new FileReader(inv))) {
+    private final String INVENTORY_PATH_FULL = "C:\\BorrowHub\\BorrowHub\\src\\data\\inventory.txt";
+    private final String BORROWED_PATH_FULL = "C:\\BorrowHub\\BorrowHub\\src\\data\\borrowed.txt";
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split("\\|");
-
-            if (parts.length >= 2) {
-                String itemName = parts[0].trim();
-                String quantity = parts[1].trim();
-
-                // Only show items with available stock
-                if (!quantity.equals("0")) {
-                    jComboBox2.addItem(itemName);
-                }
-            }
-        }
-
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, 
-            "Error loading inventory: " + e.getMessage());
-    }
-}
+ 
 
     public Borrow() {
         initComponents();
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        BasicInternalFrameUI user = (BasicInternalFrameUI)this.getUI();
+        BasicInternalFrameUI user = (BasicInternalFrameUI) this.getUI();
         user.setNorthPane(null);
-        
+
         loadItemsToComboBox(); //Automatic Ibutang tanan items 
     }
     
-    private void updateInventoryStock(String itemName, int qtyBorrowed) {
-    try {
-        File file = new File(INVENTORY_PATH);
-        java.util.List<String> updatedLines = new java.util.ArrayList<>();
+   // Load items from inventory file into comboBox
+    private void loadItemsToComboBox() {
+             jComboBox2.removeAllItems();
+        File f = new File(INVENTORY_PATH_FULL);
+        if (!f.exists()) f = new File("inventory.txt");
+        if (!f.exists()) return;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                
-                if (parts.length >= 2) {
-                    String name = parts[0].trim();
-                    int stock = Integer.parseInt(parts[1].trim());
-
-                    if (name.equals(itemName)) {
-                        stock = Math.max(0, stock - qtyBorrowed); // avoid negative
-                        line = name + " | " + stock + " | " + parts[2].trim();
+            while ((line = br.readLine()) != null) {
+                // Expect "Item | available | total"
+                String[] parts = line.split("\\s*\\|\\s*");
+                if (parts.length >= 1) {
+                    String itemName = parts[0].trim();
+                    // Optionally check available > 0
+                    int available = parts.length >= 2 ? Integer.parseInt(parts[1].trim()) : 0;
+                    if (available > 0) jComboBox2.addItem(itemName);
+                    else {
+                        // still add so user can borrow? we choose to add only available
                     }
                 }
-                updatedLines.add(line);
             }
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error loading inventory: " + ex.getMessage());
         }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            for (String updatedLine : updatedLines) {
-                writer.write(updatedLine);
-                writer.newLine();
-            }
-        }
-
-        loadItemsToComboBox(); // refresh comboBox after reducing stock
-
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, 
-            "Error updating inventory: " + e.getMessage());
     }
-}
-
     
+     // write borrow record to borrowed.txt and update inventory
+    private void saveBorrowRecord(String studentID, String fullName, String item, int qty, String purpose, String borrowDate) {
+        File file = new File(BORROWED_PATH_FULL);
+        try {
+            if (!file.exists()) file = new File("borrowed.txt");
+
+            String record = studentID + " | " + fullName + " | " + item + " | " + qty + " | " + purpose + " | " + borrowDate;
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
+                bw.write(record);
+                bw.newLine();
+            }
+
+            // decrement inventory available
+            decrementInventory(item, qty);
+
+            javax.swing.JOptionPane.showMessageDialog(this, "Borrow record saved.");
+            loadItemsToComboBox(); // refresh combo box to reflect updated stock
+
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error saving borrow record: " + ex.getMessage());
+        }
+    }
+    
+        // decrement inventory available quantity
+    private void decrementInventory(String itemName, int qtyBorrowed) {
+        File file = new File(INVENTORY_PATH_FULL);
+        if (!file.exists()) file = new File("inventory.txt");
+        if (!file.exists()) return;
+
+        ArrayList<String> lines = new ArrayList<>();
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) lines.add(line);
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error reading inventory: " + ex.getMessage());
+            return;
+        }
+
+        boolean updated = false;
+        for (int i = 0; i < lines.size(); i++) {
+            String[] parts = lines.get(i).split("\\s*\\|\\s*");
+            if (parts.length >= 3) {
+                String name = parts[0].trim();
+                int available = parseIntSafe(parts[1].trim(), 0);
+                int total = parseIntSafe(parts[2].trim(), 0);
+                if (name.equalsIgnoreCase(itemName)) {
+                    available = Math.max(0, available - qtyBorrowed);
+                    lines.set(i, name + " | " + available + " | " + total);
+                    updated = true;
+                    break;
+                }
+            }
+        }
+        if (!updated) {
+            // If item not found, append (with negative effect avoided)
+            lines.add(itemName + " | " + Math.max(0, -qtyBorrowed) + " | 0");
+        }
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+            for (String l : lines) pw.println(l);
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error writing inventory: " + ex.getMessage());
+        }
+    }
+    
+        private int parseIntSafe(String s, int fallback) {
+        try { return Integer.parseInt(s); } catch (Exception e) { return fallback; }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -100,18 +131,18 @@ private void loadItemsToComboBox() {
         jLabel5 = new javax.swing.JLabel();
         Lusername = new javax.swing.JLabel();
         Lusername1 = new javax.swing.JLabel();
-        Textusername1 = new javax.swing.JTextField();
+        TextFullname = new javax.swing.JTextField();
         Lusername2 = new javax.swing.JLabel();
-        Textusername2 = new javax.swing.JTextField();
+        textStudentID = new javax.swing.JTextField();
         Lusername4 = new javax.swing.JLabel();
         Lusername5 = new javax.swing.JLabel();
-        Textusername3 = new javax.swing.JTextField();
+        Textborrowdate = new javax.swing.JTextField();
         Lusername6 = new javax.swing.JLabel();
-        Textusername4 = new javax.swing.JTextField();
+        Textpurpose = new javax.swing.JTextField();
         jComboBox2 = new javax.swing.JComboBox<>();
         Lusername7 = new javax.swing.JLabel();
         Lusername8 = new javax.swing.JLabel();
-        Textusername5 = new javax.swing.JTextField();
+        Textquantity = new javax.swing.JTextField();
         bttnConfirm = new javax.swing.JButton();
 
         jPasswordField1.setText("jPasswordField1");
@@ -137,16 +168,16 @@ private void loadItemsToComboBox() {
         Lusername1.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         Lusername1.setText("Student ID");
 
-        Textusername1.setBackground(new java.awt.Color(240, 255, 255));
-        Textusername1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        TextFullname.setBackground(new java.awt.Color(240, 255, 255));
+        TextFullname.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        TextFullname.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         Lusername2.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         Lusername2.setText("Student Full Name");
 
-        Textusername2.setBackground(new java.awt.Color(240, 255, 255));
-        Textusername2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        textStudentID.setBackground(new java.awt.Color(240, 255, 255));
+        textStudentID.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        textStudentID.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         Lusername4.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         Lusername4.setText("Item");
@@ -154,16 +185,16 @@ private void loadItemsToComboBox() {
         Lusername5.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         Lusername5.setText("Borrow Date");
 
-        Textusername3.setBackground(new java.awt.Color(240, 255, 255));
-        Textusername3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        Textborrowdate.setBackground(new java.awt.Color(240, 255, 255));
+        Textborrowdate.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        Textborrowdate.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         Lusername6.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         Lusername6.setText("Purpose");
 
-        Textusername4.setBackground(new java.awt.Color(240, 255, 255));
-        Textusername4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        Textpurpose.setBackground(new java.awt.Color(240, 255, 255));
+        Textpurpose.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        Textpurpose.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         jComboBox2.setBackground(new java.awt.Color(240, 255, 255));
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -174,9 +205,9 @@ private void loadItemsToComboBox() {
         Lusername8.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         Lusername8.setText("Quantity");
 
-        Textusername5.setBackground(new java.awt.Color(240, 255, 255));
-        Textusername5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        Textusername5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        Textquantity.setBackground(new java.awt.Color(240, 255, 255));
+        Textquantity.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        Textquantity.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
         bttnConfirm.setBackground(new java.awt.Color(250, 217, 51));
         bttnConfirm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -205,25 +236,22 @@ private void loadItemsToComboBox() {
                         .addGap(32, 32, 32)
                         .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Lusername8)
-                            .addComponent(Textusername5, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(Textquantity, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(panelmainLayout.createSequentialGroup()
-                            .addComponent(Textusername4, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Textpurpose, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(Textusername3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(Textborrowdate, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(panelmainLayout.createSequentialGroup()
                             .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(Lusername1)
-                                .addComponent(Textusername2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(textStudentID, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(Lusername6))
-                            .addGap(21, 21, 21)
+                            .addGap(45, 45, 45)
                             .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(Lusername2)
-                                .addGroup(panelmainLayout.createSequentialGroup()
-                                    .addGap(24, 24, 24)
-                                    .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(Textusername1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(Lusername5))))))
+                                .addComponent(TextFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Lusername5))))
                     .addComponent(bttnConfirm, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
@@ -238,13 +266,13 @@ private void loadItemsToComboBox() {
                 .addComponent(Lusername7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(Textusername2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textStudentID, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelmainLayout.createSequentialGroup()
                         .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(Lusername2)
                             .addComponent(Lusername1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Textusername1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(TextFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addComponent(Lusername)
                 .addGap(12, 12, 12)
@@ -253,18 +281,18 @@ private void loadItemsToComboBox() {
                     .addComponent(Lusername4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(Textusername5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Textquantity, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelmainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelmainLayout.createSequentialGroup()
                         .addComponent(Lusername6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Textusername4, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(Textpurpose, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelmainLayout.createSequentialGroup()
                         .addComponent(Lusername5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Textusername3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Textborrowdate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(31, 31, 31)
                 .addComponent(bttnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(39, 39, 39))
@@ -285,42 +313,42 @@ private void loadItemsToComboBox() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bttnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bttnConfirmActionPerformed
-    String studentID = Textusername1.getText();
-    String fullName = Textusername2.getText();
-    String item = jComboBox2.getSelectedItem().toString();
-    String quantity = Textusername5.getText();
-    String purpose = Textusername4.getText();
-    String borrowDate = Textusername3.getText();
+        String studentID = TextFullname.getText();
+        String fullName = textStudentID.getText();
+        String item = jComboBox2.getSelectedItem().toString();
+        String quantity = Textquantity.getText();
+        String purpose = Textpurpose.getText();
+        String borrowDate = Textborrowdate.getText();
 
-    // Validate
-    if (studentID.isEmpty() || fullName.isEmpty() || quantity.isEmpty() || purpose.isEmpty() || borrowDate.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please complete all fields!");
-        return;
-    }
+        // Validate
+        if (studentID.isEmpty() || fullName.isEmpty() || quantity.isEmpty() || purpose.isEmpty() || borrowDate.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please complete all fields!");
+            return;
+        }
 
-    // Format record
-    String record = studentID + " | " 
-                    + fullName + " | " 
-                    + item + " | " 
-                    + quantity + " | " 
-                    + purpose + " | " 
-                    + borrowDate;
+        // Format record
+        String record = studentID + " | "
+                + fullName + " | "
+                + item + " | "
+                + quantity + " | "
+                + purpose + " | "
+                + borrowDate;
 
-    // Save using file handling
-    try (java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter("borrow_records.txt", true))) {
-        writer.write(record);
-        writer.newLine();
-        javax.swing.JOptionPane.showMessageDialog(this, "Borrow request saved!");
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error saving file: " + e.getMessage());
-    }
+        // Save using file handling
+        try (java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter("borrow_records.txt", true))) {
+            writer.write(record);
+            writer.newLine();
+            javax.swing.JOptionPane.showMessageDialog(this, "Borrow request saved!");
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error saving file: " + e.getMessage());
+        }
 
-    // Clear fields after saving  
-    Textusername1.setText("");
-    Textusername2.setText("");
-    Textusername5.setText("");
-    Textusername4.setText("");
-    Textusername3.setText("");
+        // Clear fields after saving  
+        TextFullname.setText("");
+        textStudentID.setText("");
+        Textquantity.setText("");
+        Textpurpose.setText("");
+        Textborrowdate.setText("");
     }//GEN-LAST:event_bttnConfirmActionPerformed
 
 
@@ -333,16 +361,16 @@ private void loadItemsToComboBox() {
     private javax.swing.JLabel Lusername6;
     private javax.swing.JLabel Lusername7;
     private javax.swing.JLabel Lusername8;
-    private javax.swing.JTextField Textusername1;
-    private javax.swing.JTextField Textusername2;
-    private javax.swing.JTextField Textusername3;
-    private javax.swing.JTextField Textusername4;
-    private javax.swing.JTextField Textusername5;
+    private javax.swing.JTextField TextFullname;
+    private javax.swing.JTextField Textborrowdate;
+    private javax.swing.JTextField Textpurpose;
+    private javax.swing.JTextField Textquantity;
     private javax.swing.JButton bttnConfirm;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JPanel panelmain;
+    private javax.swing.JTextField textStudentID;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,84 +1,89 @@
-
 package Finals;
 
 import java.io.*;
 import javax.swing.JOptionPane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JButton;
-import javax.swing.table.TableColumn;
 
 public class Inventory extends javax.swing.JInternalFrame {
 
-      private final String INVENTORY_PATH = "C:\\BorrowHub\\BorrowHub\\src\\data\\inventory.txt";
+    private final String INVENTORY_PATH = "C:\\BorrowHub\\BorrowHub\\src\\data\\inventory.txt";
 
     public Inventory() {
         initComponents();
-        
+
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        BasicInternalFrameUI user = (BasicInternalFrameUI)this.getUI();
+        BasicInternalFrameUI user = (BasicInternalFrameUI) this.getUI();
         user.setNorthPane(null);
-        
+
         loadInventoryTable();
         setupAddButton();       // I Add ang item handler
-        
+
     }
 
     //  ⭐ LOAD INVENTORY INTO TABLE
     private void loadInventoryTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0); // clear first
-        
+        model.setRowCount(0);
+
         File invent = new File(INVENTORY_PATH);
-                
+        if (!invent.exists()) {
+            invent = new File("inventory.txt");
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(invent))) {
             String line;
-
             while ((line = reader.readLine()) != null) {
-                String[] data = line.split("\\|");
-
-                if (data.length == 3) {
+                String[] data = line.split("\\s*\\|\\s*");
+                if (data.length >= 3) {
                     String itemName = data[0].trim();
                     String available = data[1].trim();
                     String total = data[2].trim();
-
                     model.addRow(new Object[]{itemName, available, total});
                 }
             }
-
         } catch (Exception e) {
-            System.out.println("Inventory file not found. Creating new file...");
+            // if file not found show empty table (no popup)
         }
     }
 
     //  ⭐ SAVE NEW ITEM INTO FILE
     private void saveNewItem(String itemName, int totalQty) {
+        File file = new File(INVENTORY_PATH);
+        try {
+            if (!file.exists()) {
+                file = new File("inventory.txt");
+            }
 
-        // 1. Check if item already exists
-        try (BufferedReader reader = new BufferedReader(new FileReader(INVENTORY_PATH))) {
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split("\\|");
-                if (data.length == 3 && data[0].trim().equalsIgnoreCase(itemName)) {
-                    JOptionPane.showMessageDialog(this, 
-                        "Item already exists in inventory!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+            // check if exists
+            boolean exists = false;
+            if (file.exists()) {
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        String[] parts = line.split("\\s*\\|\\s*");
+                        if (parts.length >= 1 && parts[0].trim().equalsIgnoreCase(itemName)) {
+                            exists = true;
+                            break;
+                        }
+                    }
                 }
             }
-        } catch (Exception ex) { }
 
-        // Save new item
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(INVENTORY_PATH, true))) {
-            writer.write(itemName + " | " + totalQty + " | " + totalQty);
-            writer.newLine();
+            if (exists) {
+                JOptionPane.showMessageDialog(this, "Item already exists in inventory!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+                writer.write(itemName + " | " + totalQty + " | " + totalQty);
+                writer.newLine();
+            }
+            loadInventoryTable();
             JOptionPane.showMessageDialog(this, "Item added successfully!");
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving item!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error saving item: " + ex.getMessage());
         }
-
-        loadInventoryTable(); // refresh table after adding item
     }
 
     //  ⭐ ADD BUTTON HANDLER
@@ -94,24 +99,19 @@ public class Inventory extends javax.swing.JInternalFrame {
 
             try {
                 int totalQty = Integer.parseInt(qtyStr);
-
                 if (totalQty <= 0) {
                     JOptionPane.showMessageDialog(this, "Quantity must be greater than 0.");
                     return;
                 }
-
                 saveNewItem(itemName, totalQty);
-
-                // Clear fields after save
                 Textusername2.setText("");
                 Textusername3.setText("");
-
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid number.");
             }
         });
-    
-}
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -254,4 +254,3 @@ public class Inventory extends javax.swing.JInternalFrame {
     private javax.swing.JPanel panelmain;
     // End of variables declaration//GEN-END:variables
 }
-
