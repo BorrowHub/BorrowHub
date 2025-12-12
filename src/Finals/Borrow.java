@@ -9,12 +9,16 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 
 public class Borrow extends javax.swing.JInternalFrame {
+    
+    private static final String INVENTORY_PATH = "C:\\BorrowHub\\BorrowHub\\src\\data\\inventory.txt";
 
     // Load items from inventory file into comboBox
 private void loadItemsToComboBox() {
     jComboBox2.removeAllItems(); // Clear old items
-
-    try (BufferedReader reader = new BufferedReader(new FileReader("inventory.txt"))) {
+    
+    File inv = new File(INVENTORY_PATH);//gi named nato ang path to inv
+        
+    try (BufferedReader reader = new BufferedReader(new FileReader(inv))) {
 
         String line;
         while ((line = reader.readLine()) != null) {
@@ -48,7 +52,7 @@ private void loadItemsToComboBox() {
     
     private void updateInventoryStock(String itemName, int qtyBorrowed) {
     try {
-        File file = new File("inventory.txt");
+        File file = new File(INVENTORY_PATH);
         java.util.List<String> updatedLines = new java.util.ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
