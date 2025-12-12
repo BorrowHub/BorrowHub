@@ -25,8 +25,7 @@ public class Return extends javax.swing.JInternalFrame {
         DefaultTableModel model = (DefaultTableModel) jTablereturn.getModel();
         model.setRowCount(0);
 
-        File file = new File("borrow_records.txt");
-        if (!file.exists()) file = new File("borrowed.txt");
+        File file = new File("borrowed.txt");
         if (!file.exists()) return;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
