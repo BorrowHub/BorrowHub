@@ -22,6 +22,23 @@ public class Return extends javax.swing.JInternalFrame {
         loadBorrowedItems();
     }
 
+    
+    private void loadBorrowedData() {
+   borrowedList.clear();
+
+        try (BufferedReader br = new BufferedReader(new FileReader("borrowed.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    borrowedList.add(parts);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Cannot load borrowed.txt");
+        }
+    }
+    }
     // LOAD BORROWED ITEMS FROM FILE
     private void loadBorrowedItems() {
         borrowedList.clear();
@@ -103,7 +120,7 @@ public class Return extends javax.swing.JInternalFrame {
     private int parseIntSafe(String s, int fallback) {
         try {
             return Integer.parseInt(s);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return fallback;
         }
     }
@@ -366,27 +383,27 @@ public class Return extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void searchtextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchtextKeyReleased
-        String text = searchtext.getText().trim().toLowerCase();
-        DefaultTableModel model = (DefaultTableModel) jTablereturn.getModel();
-        model.setRowCount(0);
+          String text = searchtext.getText().trim().toLowerCase();
+    DefaultTableModel model = (DefaultTableModel) jTablereturn.getModel();
+    model.setRowCount(0);
 
-        for (BorrowedItem b : borrowedList) {
-            CharSequence q = null;
-            if (b.getStudentID().toLowerCase().contains(q)
-                    || b.getFullName().toLowerCase().contains(q)
-                    || b.getItem().toLowerCase().contains(q)
-                    || b.getBorrowDate().toLowerCase().contains(q)
-                    || String.valueOf(b.getQuantity()).contains(q)) {
+    for (BorrowedItem b : borrowedList) {
 
-                model.addRow(new Object[]{
-                        b.getStudentID(),
-                        b.getFullName(),
-                        b.getItem(),
-                        b.getQuantity(),
-                        b.getBorrowDate()
-                });
-            }
+        if (b.getStudentID().toLowerCase().contains(text)
+                || b.getFullName().toLowerCase().contains(text)
+                || b.getItem().toLowerCase().contains(text)
+                || b.getBorrowDate().toLowerCase().contains(text)
+                || String.valueOf(b.getQuantity()).contains(text)) {
+
+            model.addRow(new Object[]{
+                b.getStudentID(),
+                b.getFullName(),
+                b.getItem(),
+                b.getQuantity(),
+                b.getBorrowDate()
+            });
         }
+    }
     }//GEN-LAST:event_searchtextKeyReleased
 
     private void jButtonreturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonreturnActionPerformed

@@ -5,8 +5,11 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import javax.swing.JOptionPane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class Borrow extends javax.swing.JInternalFrame {
@@ -14,16 +17,29 @@ public class Borrow extends javax.swing.JInternalFrame {
     private final String INVENTORY_PATH_FULL = "C:\\BorrowHub\\BorrowHub\\src\\data\\inventory.txt";
     private final String BORROWED_PATH_FULL = "C:\\BorrowHub\\BorrowHub\\src\\data\\borrowed.txt";
 
- 
+    LinkedList<String> borrowList = new LinkedList<>();
 
     public Borrow() {
         initComponents();
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         BasicInternalFrameUI user = (BasicInternalFrameUI) this.getUI();
         user.setNorthPane(null);
-
+        
         loadItemsToComboBox(); //Automatic Ibutang tanan items 
     }
+    
+    private void saveBorrowedItem(String id, String name, String item, String date) {
+        String record = id + "," + name + "," + item + "," + date;
+        borrowList.add(record);
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("borrowed.txt", true))) {
+            bw.write(record);
+            bw.newLine();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error saving file.");
+        }
+    }
+    
     
    // Load items from inventory file into comboBox
     private void loadItemsToComboBox() {
