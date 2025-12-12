@@ -105,7 +105,6 @@
                                   <Component id="borrowbttn" alignment="0" pref="176" max="32767" attributes="0"/>
                                   <Component id="returnbttn" alignment="1" pref="176" max="32767" attributes="0"/>
                                   <Component id="inventorybttn" alignment="0" pref="176" max="32767" attributes="0"/>
-                                  <Component id="recordsbttn" alignment="1" pref="176" max="32767" attributes="0"/>
                                   <Component id="logoutbttn" alignment="1" pref="176" max="32767" attributes="0"/>
                                   <Component id="borrowbttn1" alignment="1" pref="176" max="32767" attributes="0"/>
                               </Group>
@@ -132,9 +131,7 @@
                       <Component id="returnbttn" min="-2" pref="40" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="inventorybttn" min="-2" pref="40" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="recordsbttn" min="-2" pref="40" max="-2" attributes="0"/>
-                      <EmptySpace pref="115" max="32767" attributes="0"/>
+                      <EmptySpace pref="161" max="32767" attributes="0"/>
                       <Component id="logoutbttn" min="-2" pref="40" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
                   </Group>
@@ -215,26 +212,6 @@
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="inventorybttnMouseClicked"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inventorybttnActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="recordsbttn">
-              <Properties>
-                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="f2" green="f2" red="ff" type="rgb"/>
-                </Property>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="SansSerif" size="14" style="1"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="6b" green="33" red="2d" type="rgb"/>
-                </Property>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/Icons/history.png"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Records"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="recordsbttnActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="logoutbttn">

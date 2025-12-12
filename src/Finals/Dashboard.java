@@ -14,7 +14,7 @@ public class Dashboard extends javax.swing.JFrame {
         // Set alignment + icon gap for all buttons
         javax.swing.JButton[] buttons = {
             borrowbttn1, borrowbttn, returnbttn,
-            inventorybttn, recordsbttn, logoutbttn
+            inventorybttn, logoutbttn
         };
 
         for (javax.swing.JButton b : buttons) {
@@ -23,21 +23,6 @@ public class Dashboard extends javax.swing.JFrame {
         }
     }
 
-    public class DBConnection {
-    public static Connection getConnection() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/borrowhub",
-                "root",
-                ""
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -49,7 +34,6 @@ public class Dashboard extends javax.swing.JFrame {
         borrowbttn = new javax.swing.JButton();
         returnbttn = new javax.swing.JButton();
         inventorybttn = new javax.swing.JButton();
-        recordsbttn = new javax.swing.JButton();
         logoutbttn = new javax.swing.JButton();
         borrowbttn1 = new javax.swing.JButton();
         desktopleft = new javax.swing.JDesktopPane();
@@ -129,17 +113,6 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
 
-        recordsbttn.setBackground(new java.awt.Color(255, 242, 242));
-        recordsbttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        recordsbttn.setForeground(new java.awt.Color(45, 51, 107));
-        recordsbttn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/history.png"))); // NOI18N
-        recordsbttn.setText("Records");
-        recordsbttn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                recordsbttnActionPerformed(evt);
-            }
-        });
-
         logoutbttn.setBackground(new java.awt.Color(255, 242, 242));
         logoutbttn.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         logoutbttn.setForeground(new java.awt.Color(45, 51, 107));
@@ -169,7 +142,6 @@ public class Dashboard extends javax.swing.JFrame {
                             .addComponent(borrowbttn, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
                             .addComponent(returnbttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
                             .addComponent(inventorybttn, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-                            .addComponent(recordsbttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
                             .addComponent(logoutbttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
                             .addComponent(borrowbttn1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -190,9 +162,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(returnbttn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(inventorybttn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(recordsbttn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 115, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 161, Short.MAX_VALUE)
                 .addComponent(logoutbttn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
         );
@@ -292,12 +262,6 @@ public class Dashboard extends javax.swing.JFrame {
       desktopleft.add(invent).setVisible(true);
     }//GEN-LAST:event_inventorybttnActionPerformed
 
-    private void recordsbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordsbttnActionPerformed
-    Records rec = new Records();
-    desktopleft.removeAll();
-    desktopleft.add(rec).setVisible(true);
-    }//GEN-LAST:event_recordsbttnActionPerformed
-
     private void logoutbttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutbttnActionPerformed
                 int option =  JOptionPane.showConfirmDialog(this, "Are you sure?", "Logout",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -356,7 +320,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton logoutbttn;
     private javax.swing.JPanel main;
-    private javax.swing.JButton recordsbttn;
     private javax.swing.JButton returnbttn;
     // End of variables declaration//GEN-END:variables
 }
