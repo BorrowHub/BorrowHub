@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-
 public class Return extends javax.swing.JInternalFrame {
 
     ArrayList<BorrowedItem> borrowedList = new ArrayList<>();
@@ -27,7 +26,7 @@ public class Return extends javax.swing.JInternalFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
 
-        File file = new File("borrowed_records.txt");
+        File file = new File("borrowed.txt");
         if (!file.exists()) return;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -35,24 +34,14 @@ public class Return extends javax.swing.JInternalFrame {
 
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length >= 6) {
-                    String studentID = data[0].trim();
-                    String fullName = data[1].trim();
-                    String itemName = data[2].trim();
-                    int quantity = Integer.parseInt(data[3].trim());
-                    String purpose = data[4].trim();
-                    String borrowDate = data[5].trim();
-
-                    BorrowedItem b = new BorrowedItem(studentID, fullName, itemName, quantity, purpose, borrowDate);
+                if (data.length >= 3) {
+                    BorrowedItem b = new BorrowedItem(data[0], data[1], Integer.parseInt(data[2]));
                     borrowedList.add(b);
 
                     model.addRow(new Object[]{
-                            studentID,
-                            fullName,
-                            itemName,
-                            quantity,
-                            purpose,
-                            borrowDate
+                        b.getBorrower(),
+                        b.getItem(),
+        b.getQuantity()
                     });
                 }
             }
@@ -63,11 +52,9 @@ public class Return extends javax.swing.JInternalFrame {
 
     //====================== WRITE UPDATED BORROWED FILE ======================
     private void saveBorrowedList() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("borrow_records.txt"))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter("borrowed.txt"))) {
             for (BorrowedItem b : borrowedList) {
-                bw.write(b.getStudentID() + " | " + b.getFullName() + " | " + b.getItem() + " | "
-                        + b.getQuantity() + " | " + b.getPurpose() + " | " + b.getBorrowDate());
-                bw.newLine();
+                pw.println(b.getBorrower() + "," + b.getItem() + "," + b.getQuantity());
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error saving borrowed list!");
